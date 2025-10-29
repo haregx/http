@@ -201,13 +201,18 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _dropdownItems.clear();
           _dropdownItems.addAll([all]);
-          for (var breed in breedsResp.breeads.keys) {
-            for (var subBreed in breedsResp.breeads[breed]!) {
-              _dropdownItems.add(
-                '${_capitalize(breed)} ${_capitalize(subBreed)}',
-              );
+          // Add each breed. If it has sub-breeds, add entries for each
+          // sub-breed as "Breed SubBreed". If it has no sub-breeds, add
+          // the breed itself so standalone breeds are selectable.
+          breedsResp.breeads.forEach((breed, subs) {
+            if (subs.isEmpty) {
+              _dropdownItems.add(_capitalize(breed));
+            } else {
+              for (var subBreed in subs) {
+                _dropdownItems.add('${_capitalize(breed)} ${_capitalize(subBreed)}');
+              }
             }
-          }
+          });
           _selectedValue = all;
         });
         if (mounted) fetchRandomDog(all);

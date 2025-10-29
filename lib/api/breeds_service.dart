@@ -32,7 +32,13 @@ class BreedsService {
       url = '${ApiConfig.baseUrl}/breeds/image/random';
     } else {
       final parts = breed.toLowerCase().split(' ');
-      url = '${ApiConfig.baseUrl}/breed/${parts[0]}/${parts[1]}/images/random';
+      if (parts.length == 1) {
+        // Breed without sub-breed
+        url = '${ApiConfig.baseUrl}/breed/${parts[0]}/images/random';
+      } else {
+        // Breed with sub-breed (format: "breed subbreed")
+        url = '${ApiConfig.baseUrl}/breed/${parts[0]}/${parts[1]}/images/random';
+      }
     }
 
     try {
