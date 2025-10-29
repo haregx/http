@@ -4,7 +4,7 @@ import 'package:http_req/api/breed_class.dart';
 import 'package:http_req/api/https_service.dart';
 import 'package:http_req/widgets/fancy_button.dart';
 import 'package:http_req/widgets/platform_constants.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+// import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatefulWidget {
 	const HomeScreen({super.key});
@@ -43,13 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
 					padding: const EdgeInsets.all(16.0),
 					child: Column(
 						crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
 						children: [
 							// Asset image shown above the dropdown
-							ClipRRect(
+						/*	ClipRRect(
 								borderRadius: BorderRadius.circular(8),
 								child: Image.asset(
 									'assets/images/hotdog.png',
-									height: 100,
+									height: 80,
 									width: double.infinity,
 									fit: BoxFit.fitHeight,
 									errorBuilder: (c, e, s) => Container(
@@ -60,24 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
 								),
 							),
 							const SizedBox(height: 8),
-							DropdownButton<String>(
-								value: _selectedValue,
-								hint: const Text('请选择'),
-								isExpanded: true,
-								  items: _dropdownItems
-									  .map((item) => DropdownMenuItem<String>(
-											value: item,
-											child: Text(_capitalize(item)),
-										  ))
-									  .toList(),
-								onChanged: (value) {
-									setState(() {
-										_selectedValue = value;
-                    fetchRandomDog(_selectedValue);
-									});
-								},
-							),
-							const SizedBox(height: 24),
+              */
+							
 							Container(
 								height: 350,
 								decoration: BoxDecoration(
@@ -112,11 +97,47 @@ class _HomeScreenState extends State<HomeScreen> {
 			                				),
 								),
 								const SizedBox(height: 12),
-								FancyButton(
-									onPressed: _loadingImage ? null : () => fetchRandomDog(_selectedValue ?? all),
-									leadingIcon: LucideIcons.recycle,
-									label: '加载新图片',
-								),
+                DropdownButton<String>(
+								value: _selectedValue,
+								hint: const Text('请选择'),
+								isExpanded: true,
+								  items: _dropdownItems
+									  .map((item) => DropdownMenuItem<String>(
+											value: item,
+											child: Text(_capitalize(item)),
+										  ))
+									  .toList(),
+								onChanged: (value) {
+									setState(() {
+										_selectedValue = value;
+                    fetchRandomDog(_selectedValue);
+									});
+								},
+							),
+							const SizedBox(height: 24),
+								IntrinsicWidth(
+                  stepHeight: 60,
+                  child: FancyButton(
+                    onPressed: _loadingImage ? null : () => fetchRandomDog(_selectedValue ?? all),
+                    // Use the actual PNG as a multi-colour image in the leading slot.
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/hotdog.png',
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.contain,
+                          errorBuilder: (c, e, s) => const Icon(Icons.fastfood),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                    ),
+                    // Keep a text color; the Image.asset will retain its original colours.
+										textStyle: const TextStyle(color: Colors.white),
+										label: '你的下一个热狗',
+                  ),
+                ),
 						],
 					),
 				),

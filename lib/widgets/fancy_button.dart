@@ -22,6 +22,10 @@ class FancyButton extends StatefulWidget {
   final double? iconTextSpacing;
   /// Optional leading icon (left of text).
   final IconData? leadingIcon;
+  /// Optional leading widget (left of text). If provided, this widget will be
+  /// rendered instead of [leadingIcon]. It will be wrapped in an IconTheme so
+  /// the color/size matches the button text color.
+  final Widget? leading;
 
   /// Optional trailing icon (right of text).
   final IconData? trailingIcon;
@@ -65,6 +69,7 @@ class FancyButton extends StatefulWidget {
     this.onPressed,
     this.enabled = true,
     this.leadingIcon,
+    this.leading,
     this.trailingIcon,
     this.backgroundColor = FancyButtonColor.blue,
     this.iconTextSpacing,
@@ -322,7 +327,21 @@ class _FancyButtonState extends State<FancyButton> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (widget.leadingIcon != null) ...[
+                      if (widget.leading != null) ...[
+                        IconTheme.merge(
+                          data: IconThemeData(
+                            size: 22,
+                            color: isDisabled
+                                ? (defaultTargetPlatform == TargetPlatform.iOS
+                                      ? const Color(0xFFAEAEB2)
+                                      : defaultTargetPlatform == TargetPlatform.android
+                                          ? const Color(0xFF424242)
+                                          : Colors.grey.shade600)
+                                : (widget.textStyle?.color ?? Colors.white),
+                          ),
+                          child: widget.leading!,
+                        ),
+                      ] else if (widget.leadingIcon != null) ...[
                         Icon(
                           widget.leadingIcon,
                           size: 22,
