@@ -20,6 +20,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final String all = '所有犬种';
   String? _imageUrl;
   bool _loadingImage = false;
+  // Prevent rapid re-clicks: simple cooldown after pressing the button.
+  bool _buttonDisabled = false;
+
+  /// Trigger loading the next image with the same cooldown used by the
+  /// button. Safe to call from button or image tap.
+  void _triggerNextImage() {
+    if (_loadingImage || _buttonDisabled) return;
+    setState(() => _buttonDisabled = true);
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _buttonDisabled = false);
+    });
+    fetchRandomDog(_selectedValue ?? all);
+  }
 
   String _capitalize(String s) {
     if (s.isEmpty) return s;
@@ -64,7 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
 							),
 							const SizedBox(height: 8),
               */
-            Container(
+            GestureDetector(  
+              onTap: (_loadingImage || _buttonDisabled) ? null : _triggerNextImage,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
               height: side,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
@@ -118,8 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-            ),
-            const SizedBox(height: 12),
+        ),
+        ),
+      const SizedBox(height: 12),
             DropdownButton<String>(
               value: _selectedValue,
               hint: const Text('请选择'),
@@ -128,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .map(
                     (item) => DropdownMenuItem<String>(
                       value: item,
-                      child: Text(_capitalize(item)),
+                      child: Text(item),
                     ),
                   )
                   .toList(),
@@ -141,11 +158,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
             IntrinsicWidth(
+
               stepHeight: 60,
               child: FancyButton(
-                onPressed: _loadingImage
-                    ? null
-                    : () => fetchRandomDog(_selectedValue ?? all),
+                // Button is enabled only when not loading and not in cooldown.
+                enabled: !_loadingImage && !_buttonDisabled,
+                // Reuse the centralized trigger so button and image tap behave the same.
+                onPressed: (_loadingImage || _buttonDisabled) ? null : _triggerNextImage,
                 // Use the actual PNG as a multi-colour image in the leading slot.
                 leading: Row(
                   mainAxisSize: MainAxisSize.min,
