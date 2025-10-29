@@ -3,7 +3,7 @@ import 'package:http_req/api/config.dart';
 import 'package:http_req/api/https_service.dart';
 
 class BreedsService {
-  Future<BreedResponse> get () async {
+  Future<Response> get () async {
     final url = '${ApiConfig.baseUrl}/breeds/list/all';
     
     try {
@@ -18,11 +18,11 @@ class BreedsService {
       String code = response['status'] as String? ?? 'false';
       if (code == 'success') {
         debugPrint('✅ success (code success)');
-        return BreedResponse.success(response);
+        return Response.success(response);
       } 
-      return BreedResponse.error('Unknown code: $code');
+      return Response.error('Unknown code: $code');
     } catch (e) {
-      return BreedResponse.error(e);
+      return Response.error(e);
     }
   }
 
@@ -32,13 +32,7 @@ class BreedsService {
       url = '${ApiConfig.baseUrl}/breeds/image/random';
     } else {
       final parts = breed.toLowerCase().split(' ');
-      if (parts.length == 1) {
-        url = '${ApiConfig.baseUrl}/breed/${parts[0]}/images/random';
-      } else if (parts.length == 2) {
-        url = '${ApiConfig.baseUrl}/breed/${parts[0]}/${parts[1]}/images/random';
-      } else {
-        return BreedResponse.error('Invalid breed format: $breed');
-      }
+      url = '${ApiConfig.baseUrl}/breed/${parts[0]}/${parts[1]}/images/random';
     }
 
     try {
@@ -53,25 +47,25 @@ class BreedsService {
       String code = response['status'] as String? ?? 'false';
       if (code == 'success') {
         debugPrint('✅ success (code success)');
-        return BreedResponse.success(response);
+        return Response.success(response);
       } 
-      return BreedResponse.error('Unknown code: $code');
+      return Response.error('Unknown code: $code');
     } catch (e) {
-      return BreedResponse.error(e);
+      return Response.error(e);
     }
   }
 }
 
-class BreedResponse {
+class Response {
   final bool isSuccess;
   final dynamic data;
   final Object? error;
 
-  BreedResponse.success(this.data)
+  Response.success(this.data)
       : isSuccess = true,
         error = null;
 
-  BreedResponse.error(this.error)
+  Response.error(this.error)
       : isSuccess = false,
         data = null;
 }

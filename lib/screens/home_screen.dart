@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http_req/api/breeds_service.dart';
 import 'package:http_req/api/breed_class.dart';
 import 'package:http_req/api/https_service.dart';
+import 'package:http_req/widgets/fancy_button.dart';
+import 'package:http_req/widgets/platform_constants.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatefulWidget {
 	const HomeScreen({super.key});
@@ -14,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
 		String? _selectedValue;
 		final List<String> _dropdownItems = [];
     final BreedsService _breedsService = BreedsService();
-    final String all = 'Alle';
+	final String all = '所有犬种';
 		String? _imageUrl;
 		bool _loadingImage = false;
 
@@ -34,16 +37,32 @@ class _HomeScreenState extends State<HomeScreen> {
 		Widget build(BuildContext context) {
 			return Scaffold(
 				appBar: AppBar(
-					title: const Text('Hot Dogs'),
+					title: const Text('犬种浏览'),
 				),
 				body: Padding(
 					padding: const EdgeInsets.all(16.0),
 					child: Column(
 						crossAxisAlignment: CrossAxisAlignment.stretch,
 						children: [
+							// Asset image shown above the dropdown
+							ClipRRect(
+								borderRadius: BorderRadius.circular(8),
+								child: Image.asset(
+									'assets/images/hotdog.png',
+									height: 100,
+									width: double.infinity,
+									fit: BoxFit.fitHeight,
+									errorBuilder: (c, e, s) => Container(
+										height: 120,
+										color: Colors.grey[200],
+										child: const Center(child: Icon(Icons.image, size: 48)),
+									),
+								),
+							),
+							const SizedBox(height: 8),
 							DropdownButton<String>(
 								value: _selectedValue,
-								hint: const Text('Bitte wählen'),
+								hint: const Text('请选择'),
 								isExpanded: true,
 								  items: _dropdownItems
 									  .map((item) => DropdownMenuItem<String>(
@@ -60,17 +79,17 @@ class _HomeScreenState extends State<HomeScreen> {
 							),
 							const SizedBox(height: 24),
 							Container(
-								height: 400,
+								height: 350,
 								decoration: BoxDecoration(
 									border: Border.all(color: Colors.grey),
-									borderRadius: BorderRadius.circular(12),
+									borderRadius: BorderRadius.circular(PlatformConstants.buttonBorderRadius),
 									color: Colors.grey[200],
 								),
 								child: _loadingImage
 									? const Center(child: CircularProgressIndicator())
 									: (_imageUrl != null && _imageUrl!.isNotEmpty)
 										? ClipRRect(
-											borderRadius: BorderRadius.circular(12),
+											borderRadius: BorderRadius.circular(PlatformConstants.buttonBorderRadius),
 											child: Image.network(
 												_imageUrl!,
 												fit: BoxFit.cover,
@@ -84,19 +103,19 @@ class _HomeScreenState extends State<HomeScreen> {
 			                			: Center(
 			                				child: Column(
 			                					mainAxisSize: MainAxisSize.min,
-			                					children: [
-			                						Icon(Icons.image, size: 64, color: Colors.grey[600]),
-			                						const SizedBox(height: 8),
-			                						Text('Kein Bild verfügbar', style: TextStyle(color: Colors.grey[700])),
-			                					],
+	                							children: [
+	                								Icon(Icons.image, size: 64, color: Colors.grey[600]),
+	                								const SizedBox(height: 8),
+	                								Text('暂无图片', style: TextStyle(color: Colors.grey[700])),
+	                							],
 			                				),
 			                				),
 								),
 								const SizedBox(height: 12),
-								ElevatedButton.icon(
+								FancyButton(
 									onPressed: _loadingImage ? null : () => fetchRandomDog(_selectedValue ?? all),
-									icon: const Icon(Icons.refresh),
-									label: const Text('Neues Bild laden'),
+									leadingIcon: LucideIcons.recycle,
+									label: '加载新图片',
 								),
 						],
 					),
