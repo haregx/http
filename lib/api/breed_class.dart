@@ -1,25 +1,10 @@
-// import 'dart:convert'; // not needed directly here (keep commented in case you want json encode/decode helpers)
 import 'package:flutter/foundation.dart';
 
-/// Starke Typisierung für die vollständige JSON-Antwort.
-///
-/// Dieses Modell entspricht exakt dem JSON-Shape:
-/// {
-///   "message": { "affenpinscher": [], "african": ["wild"], ... },
-///   "status": "success"
-/// }
 class BreedsResponse {
 	final Map<String, List<String>> breeads;
 	final String status;
 
 	const BreedsResponse({required this.breeads, required this.status});
-
-	BreedsResponse copyWith({Map<String, List<String>>? breeads, String? status}) {
-		return BreedsResponse(
-			breeads: breeads ?? this.breeads,
-			status: status ?? this.status,
-		);
-	}
 
 	factory BreedsResponse.fromJson(Map<String, dynamic> json) {
 		final messageMap = (json['message'] as Map<String, dynamic>? ?? {});
