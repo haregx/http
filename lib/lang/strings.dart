@@ -7,6 +7,7 @@ class Strings {
   //static const String header = 'Dein nächster leckerer Hotdog';
   static const String noImageAvailable = 'Kein Bild verfügbar';
   static const String hintPleaseSelect = 'Bitte wählen';
-  static const String yourHotdog = 'Dein Dog hot und süß';
-  static const String loadNewHotdog = 'Neuen Hotdog laden';
+  static const String yourHotdog = 'Tappe auf das Bild, um einen neuen Hotdog zu laden, oder wähle eine neue Rasse aus.';
+  static const String loadNewHotdog = 'Neues Bild laden';
+  static const String loadingImage = 'Bild wird geladen..';
 }

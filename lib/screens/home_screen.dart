@@ -37,8 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //        Center(child: Text(Strings.yourHotdog)),
-                  //        const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      Strings.yourHotdog,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                    const SizedBox(height: 12),
                   GestureDetector(
                     onTap: (model.loading || !model.buttonEnabled)
                         ? null
@@ -53,41 +63,60 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         color: Colors.grey[200],
                       ),
-                      child: model.loading
-                          ? const Center(child: CircularProgressIndicator())
-                          : (model.imageUrl.isNotEmpty)
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                PlatformConstants.buttonBorderRadius,
-                              ),
-                              child: Image.network(
-                                model.imageUrl,
-                                fit: BoxFit.cover,
-                                errorBuilder: (c, e, s) => const Center(
-                                  child: Icon(Icons.broken_image),
-                                ),
-                              ),
-                            )
-                          : Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.image,
-                                    size: 64,
-                                    color: Colors.grey[600],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    Strings.noImageAvailable,
-                                    style: TextStyle(color: Colors.grey[700]),
-                                  ),
-                                ],
-                              ),
-                            ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        switchInCurve: Curves.easeIn,
+                        switchOutCurve: Curves.easeOut,
+                            child: model.loading
+                                ? SizedBox.expand(
+                                    key: const ValueKey('loading'),
+                                    child: Center(
+                                      child: Text(
+                                        Strings.loadingImage,
+                                        style: TextStyle(
+                                          color: Colors.grey[800],
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : (model.imageUrl.isNotEmpty)
+                                    ? ClipRRect(
+                                        key: ValueKey(model.imageUrl),
+                                        borderRadius:
+                                            BorderRadius.circular(PlatformConstants.buttonBorderRadius),
+                                        child: SizedBox.expand(
+                                          child: Image.network(
+                                            model.imageUrl,
+                                            fit: BoxFit.cover,
+                                            // If the image fails to load, show a textual placeholder instead of an asset.
+                                            errorBuilder: (c, e, s) => Center(
+                                              child: Text(
+                                                Strings.noImageAvailable,
+                                                style: TextStyle(color: Colors.grey[700]),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox.expand(
+                                        key: const ValueKey('no-image'),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.image, size: 64, color: Colors.grey[600]),
+                                              const SizedBox(height: 8),
+                                              Text(Strings.noImageAvailable, style: TextStyle(color: Colors.grey[700])),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 36),
                   DropdownButton<String>(
                     value: model.selectedValue.isEmpty
                         ? null
@@ -98,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .map(
                           (item) => DropdownMenuItem<String>(
                             value: item,
-                            child: Text(item),
+                            child: Text(item,  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400),),
                           ),
                         )
                         .toList(),
@@ -111,33 +140,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-                  IntrinsicWidth(
+                /*  IntrinsicWidth(
                     stepHeight: 60,
-                    child: FancyButton(
-                      // Button is enabled only when not loading and not in cooldown.
-                      enabled: !model.loading && model.buttonEnabled,
-                      // Reuse the centralized trigger so button and image tap behave the same.
-                      onPressed: (model.loading || !model.buttonEnabled)
-                          ? null
-                          : model.loadNextImage,
-                      // Use the actual PNG as a multi-colour image in the leading slot.
-                      leading: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            'assets/images/hotdog.png',
-                            width: 64,
-                            height: 64,
-                            fit: BoxFit.contain,
+                    child: Builder(builder: (context) {
+                      final bool btnEnabled = !model.loading && model.buttonEnabled;
+                      return AnimatedOpacity(
+                        duration: const Duration(milliseconds: 2000),
+                        opacity: btnEnabled ? 1.0 : 0.0,
+                        curve: Curves.easeInOut,
+                        child: IgnorePointer(
+                          ignoring: !btnEnabled,
+                          child: FancyButton(
+                            // Button is enabled only when not loading and not in cooldown.
+                            enabled: btnEnabled,
+                            // Reuse the centralized trigger so button and image tap behave the same.
+                            onPressed: btnEnabled ? model.loadNextImage : null,
+                            // Use the actual PNG as a multi-colour image in the leading slot.
+                            leading: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/hotdog.png',
+                                  width: 64,
+                                  height: 64,
+                                  fit: BoxFit.contain,
+                                ),
+                                const SizedBox(width: 10),
+                              ],
+                            ),
+                            // Keep a text color; the Image.asset will retain its original colours.
+                            textStyle: const TextStyle(color: Colors.white),
+                            label: Strings.loadNewHotdog,
                           ),
-                          const SizedBox(width: 10),
-                        ],
-                      ),
-                      // Keep a text color; the Image.asset will retain its original colours.
-                      textStyle: const TextStyle(color: Colors.white),
-                      label: Strings.loadNewHotdog,
-                    ),
-                  ),
+                        ),
+                      );
+                    }),
+                  ),*/
                 ],
               ),
             ),

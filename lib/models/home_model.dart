@@ -87,11 +87,19 @@ class HomeModel extends ChangeNotifier {
   // Cooldown helper used by button/image taps
   Future<void> loadNextImage() async {
     if (loading || !buttonEnabled) return;
+    // Disable the button immediately to prevent rapid taps.
     buttonEnabled = false;
     notifyListeners();
-    //  await Future.delayed(const Duration(milliseconds: 800));
+
+    // Start fetching the new image immediately.
+    final fetchFuture = fetchRandomDog(selectedValue);
+
+    // Re-enable the button after 1 second regardless of fetch duration.
+    await Future.delayed(const Duration(seconds: 1));
     buttonEnabled = true;
     notifyListeners();
-    await fetchRandomDog(selectedValue);
+
+    // Wait for fetch to complete before returning so callers can observe loading state.
+    await fetchFuture;
   }
 }
