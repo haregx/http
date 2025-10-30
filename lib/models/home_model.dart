@@ -10,7 +10,8 @@ class HomeModel extends ChangeNotifier {
   String selectedValue = '';
   String imageUrl = '';
   bool loading = false;
-  bool buttonDisabled = false;
+  // true when the button may be pressed
+  bool buttonEnabled = true;
 
   HomeModel() {
     loadBreeds();
@@ -85,11 +86,11 @@ class HomeModel extends ChangeNotifier {
 
   // Cooldown helper used by button/image taps
   Future<void> loadNextImage() async {
-    if (loading || buttonDisabled) return;
-    buttonDisabled = true;
+    if (loading || !buttonEnabled) return;
+    buttonEnabled = false;
     notifyListeners();
     //  await Future.delayed(const Duration(milliseconds: 800));
-    buttonDisabled = false;
+    buttonEnabled = true;
     notifyListeners();
     await fetchRandomDog(selectedValue);
   }

@@ -22,8 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeModel>(
-      builder: (context, model, _) {
+    return ChangeNotifierProvider(
+      create: (_) => HomeModel(),
+      child: Consumer<HomeModel>(
+        builder: (context, model, _) {
           // Compute available width inside the Padding (16 left + 16 right) and
           // use it as the height to make the image container a square.
           final double side = MediaQuery.of(context).size.width - (16.0 * 2);
@@ -35,10 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-          //        Center(child: Text(Strings.yourHotdog)),
-          //        const SizedBox(height: 12),
+                  //        Center(child: Text(Strings.yourHotdog)),
+                  //        const SizedBox(height: 12),
                   GestureDetector(
-                    onTap: (model.loading || model.buttonDisabled)
+                    onTap: (model.loading || !model.buttonEnabled)
                         ? null
                         : model.loadNextImage,
                     behavior: HitTestBehavior.opaque,
@@ -113,9 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     stepHeight: 60,
                     child: FancyButton(
                       // Button is enabled only when not loading and not in cooldown.
-                      enabled: !model.loading && !model.buttonDisabled,
+                      enabled: !model.loading && model.buttonEnabled,
                       // Reuse the centralized trigger so button and image tap behave the same.
-                      onPressed: (model.loading || model.buttonDisabled)
+                      onPressed: (model.loading || !model.buttonEnabled)
                           ? null
                           : model.loadNextImage,
                       // Use the actual PNG as a multi-colour image in the leading slot.
@@ -141,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
     );
   }
 }
