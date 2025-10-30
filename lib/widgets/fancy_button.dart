@@ -5,60 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_req/widgets/platform_constants.dart';
 
-
-
 enum FancyButtonColor { blue, red, green, grey, orange }
 
-/// A 3D-styled button for primary actions, with gradient, shadow, and customizable text.
-// Stateless widget for a 3D-styled common button.
-
-/// A 3D-styled customizable button for primary actions.
-/// Supports enabled/disabled state, platform-adaptive border radius and colors.
 class FancyButton extends StatefulWidget {
-  
-  /// Ob der Button als Alert (rot) dargestellt wird.
   final FancyButtonColor backgroundColor;
-  /// Optionaler Abstand zwischen Icon und Text.
   final double? iconTextSpacing;
-  /// Optional leading icon (left of text).
   final IconData? leadingIcon;
-  /// Optional leading widget (left of text). If provided, this widget will be
-  /// rendered instead of [leadingIcon]. It will be wrapped in an IconTheme so
-  /// the color/size matches the button text color.
   final Widget? leading;
-
-  /// Optional trailing icon (right of text).
   final IconData? trailingIcon;
-
-  /// The button label text.
   final String label;
-
-  /// The button height. If null, will be responsive to screen size.
   final double? height;
-
-  /// The border radius of the button.
-  /// If not set, uses iOS/Android defaults.
   final double borderRadius;
-
-  /// Optional text style for the label.
   final TextStyle? textStyle;
-
-  /// Callback when the button is pressed.
   final VoidCallback? onPressed;
-
-  /// Horizontal padding for the label.
   final double paddingHorizontal;
-
-  /// Gradient colors for the button background.
-  // final List<Color> colorGradient;
-  /// Shadow color for the button.
-  // final Color shadowColor;
-  /// Inner vertical gradient overlay colors.
-  // final List<Color> innerColorGradient;
-  /// Whether the button is enabled (default: true).
   final bool enabled;
 
-  /// Creates a 3D-styled button with platform-adaptive border radius and disabled state.
   FancyButton({
     super.key,
     required this.label,
@@ -151,8 +113,6 @@ class _FancyButtonState extends State<FancyButton> {
     }
   }
 
-  /// Returns a responsive button height based on device type and platform guidelines.
-  /// Uses shortestSide to distinguish phone/tablet, so orientation does not affect the result.
   double _responsiveHeight(BuildContext context) {
     final double shortestSide = MediaQuery.of(context).size.shortestSide;
     final bool isTablet = shortestSide >= 600;
@@ -162,10 +122,11 @@ class _FancyButtonState extends State<FancyButton> {
   }
 
   /// Whether the button is currently pressed.
-  bool _pressed = false;
+  final ValueNotifier<bool> _pressed = ValueNotifier<bool>(false);
 
   /// Returns the background gradient colors depending on state and platform.
   List<Color> get _currentColors {
+    final bool pressed = _pressed.value;
     if (!widget.enabled) {
       // Disabled: flat gradient, lighter shadow, less 3D
       if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -179,29 +140,37 @@ class _FancyButtonState extends State<FancyButton> {
           const Color.fromARGB(255, 180, 180, 180),
         ];
       } else {
-        return [
-          Colors.grey.shade200,
-          Colors.grey.shade400
-        ];
+        return [Colors.grey.shade200, Colors.grey.shade400];
       }
     }
     // Slightly darken when pressed
     switch (widget.backgroundColor) {
       case FancyButtonColor.red:
-        return FancyButton._redGradient.map((c) => _pressed ? _darken(c, 0.10) : c).toList();
+        return FancyButton._redGradient
+            .map((c) => pressed ? _darken(c, 0.10) : c)
+            .toList();
       case FancyButtonColor.green:
-        return FancyButton._greenGradient.map((c) => _pressed ? _darken(c, 0.10) : c).toList();
+        return FancyButton._greenGradient
+            .map((c) => pressed ? _darken(c, 0.10) : c)
+            .toList();
       case FancyButtonColor.grey:
-        return FancyButton._greyGradient.map((c) => _pressed ? _darken(c, 0.10) : c).toList();
+        return FancyButton._greyGradient
+            .map((c) => pressed ? _darken(c, 0.10) : c)
+            .toList();
       case FancyButtonColor.blue:
-        return FancyButton._blueGradient.map((c) => _pressed ? _darken(c, 0.10) : c).toList();
+        return FancyButton._blueGradient
+            .map((c) => pressed ? _darken(c, 0.10) : c)
+            .toList();
       case FancyButtonColor.orange:
-        return FancyButton._orangeGradient.map((c) => _pressed ? _darken(c, 0.10) : c).toList();
+        return FancyButton._orangeGradient
+            .map((c) => pressed ? _darken(c, 0.10) : c)
+            .toList();
     }
   }
 
   /// Returns the inner vertical gradient overlay colors depending on state and platform.
   List<Color> get _currentInnerColors {
+    final bool pressed = _pressed.value;
     if (!widget.enabled) {
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         return [const Color(0xFFF2F2F7), const Color(0x00D1D1D6)];
@@ -213,20 +182,31 @@ class _FancyButtonState extends State<FancyButton> {
     }
     switch (widget.backgroundColor) {
       case FancyButtonColor.red:
-        return FancyButton._redInnerGradient.map((c) => _pressed ? _darken(c, 0.08) : c).toList();
+        return FancyButton._redInnerGradient
+            .map((c) => pressed ? _darken(c, 0.08) : c)
+            .toList();
       case FancyButtonColor.green:
-        return FancyButton._greenInnerGradient.map((c) => _pressed ? _darken(c, 0.08) : c).toList();
+        return FancyButton._greenInnerGradient
+            .map((c) => pressed ? _darken(c, 0.08) : c)
+            .toList();
       case FancyButtonColor.grey:
-        return FancyButton._greyInnerGradient.map((c) => _pressed ? _darken(c, 0.08) : c).toList();
+        return FancyButton._greyInnerGradient
+            .map((c) => pressed ? _darken(c, 0.08) : c)
+            .toList();
       case FancyButtonColor.blue:
-        return FancyButton._blueInnerGradient.map((c) => _pressed ? _darken(c, 0.08) : c).toList();
+        return FancyButton._blueInnerGradient
+            .map((c) => pressed ? _darken(c, 0.08) : c)
+            .toList();
       case FancyButtonColor.orange:
-        return FancyButton._orangeInnerGradient.map((c) => _pressed ? _darken(c, 0.08) : c).toList();
+        return FancyButton._orangeInnerGradient
+            .map((c) => pressed ? _darken(c, 0.08) : c)
+            .toList();
     }
   }
 
   /// Returns the shadow color depending on state and platform.
   Color get _currentShadowColor {
+    final bool pressed = _pressed.value;
     if (!widget.enabled) {
       // Disabled: lighter, less blur
       if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -239,15 +219,25 @@ class _FancyButtonState extends State<FancyButton> {
     }
     switch (widget.backgroundColor) {
       case FancyButtonColor.red:
-        return _pressed ? _darken(FancyButton._redShadow, 0.15) : FancyButton._redShadow;
+        return pressed
+            ? _darken(FancyButton._redShadow, 0.15)
+            : FancyButton._redShadow;
       case FancyButtonColor.green:
-        return _pressed ? _darken(FancyButton._greenShadow, 0.15) : FancyButton._greenShadow;
+        return pressed
+            ? _darken(FancyButton._greenShadow, 0.15)
+            : FancyButton._greenShadow;
       case FancyButtonColor.grey:
-        return _pressed ? _darken(FancyButton._greyShadow, 0.15) : FancyButton._greyShadow;
+        return pressed
+            ? _darken(FancyButton._greyShadow, 0.15)
+            : FancyButton._greyShadow;
       case FancyButtonColor.blue:
-        return _pressed ? _darken(FancyButton._blueShadow, 0.15) : FancyButton._blueShadow;
+        return pressed
+            ? _darken(FancyButton._blueShadow, 0.15)
+            : FancyButton._blueShadow;
       case FancyButtonColor.orange:
-        return _pressed ? _darken(FancyButton._orangeShadow, 0.15) : FancyButton._orangeShadow;
+        return pressed
+            ? _darken(FancyButton._orangeShadow, 0.15)
+            : FancyButton._orangeShadow;
     }
   }
 
@@ -259,143 +249,167 @@ class _FancyButtonState extends State<FancyButton> {
         .toColor();
   }
 
+  @override
+  void dispose() {
+    _pressed.dispose();
+    super.dispose();
+  }
+
   /// Builds the button widget tree with all visual states and effects.
   @override
   Widget build(BuildContext context) {
-    final bool isDisabled = !widget.enabled;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(widget.borderRadius),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(widget.borderRadius),
-        onTap: isDisabled ? null : widget.onPressed,
-        onTapDown: isDisabled ? null : (_) => setState(() => _pressed = true),
-        onTapUp: isDisabled ? null : (_) => setState(() => _pressed = false),
-        onTapCancel: isDisabled ? null : () => setState(() => _pressed = false),
-        splashColor: isDisabled ? Colors.transparent : null,
-        highlightColor: isDisabled ? Colors.transparent : null,
-        child: Opacity(
-          opacity: isDisabled ? 0.6 : 1.0,
-          child: Container(
-            height: widget.height ?? _responsiveHeight(context),
-            // Outer decoration: less 3D for disabled
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              gradient: isDisabled
-                  ? LinearGradient(
+    return ValueListenableBuilder<bool>(
+      valueListenable: _pressed,
+      builder: (context, pressed, child) {
+        final bool isDisabled = !widget.enabled;
+        return Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            onTap: isDisabled ? null : widget.onPressed,
+            onTapDown: isDisabled ? null : (_) => _pressed.value = true,
+            onTapUp: isDisabled ? null : (_) => _pressed.value = false,
+            onTapCancel: isDisabled ? null : () => _pressed.value = false,
+            splashColor: isDisabled ? Colors.transparent : null,
+            highlightColor: isDisabled ? Colors.transparent : null,
+            child: Opacity(
+              opacity: isDisabled ? 0.6 : 1.0,
+              child: Container(
+                height: widget.height ?? _responsiveHeight(context),
+                // Outer decoration: less 3D for disabled
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  gradient: isDisabled
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: _currentColors,
+                          stops: const [0.0, 1.0],
+                        )
+                      : LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: _currentColors,
+                          stops: const [0.0, 1.0],
+                        ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _currentShadowColor,
+                      blurRadius: isDisabled ? 2 : 15,
+                      offset: Offset(0, isDisabled ? 1 : 10),
+                    ),
+                    BoxShadow(
+                      color: Colors.white.withAlpha(128),
+                      blurRadius: 4,
+                      offset: Offset(0, -1),
+                      spreadRadius: -2,
+                    ),
+                  ],
+                ),
+                child: Container(
+                  // Inner decoration: subtle vertical gradient overlay
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
+                    gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: _currentColors,
-                      stops: const [0.0, 1.0],
-                    )
-                  : LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: _currentColors,
-                      stops: const [0.0, 1.0],
+                      colors: _currentInnerColors,
+                      stops: const [0.0, 0.4],
                     ),
-              boxShadow: [
-                BoxShadow(
-                  color: _currentShadowColor,
-                  blurRadius: isDisabled ? 2 : 15,
-                  offset: Offset(0, isDisabled ? 1 : 10),
-                ),
-                BoxShadow(
-                  color: Colors.white.withAlpha(128),
-                  blurRadius: 4,
-                  offset: Offset(0, -1),
-                  spreadRadius: -2,
-                ),
-              ],
-            ),
-            child: Container(
-              // Inner decoration: subtle vertical gradient overlay
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: _currentInnerColors,
-                  stops: const [0.0, 0.4],
-                ),
-              ),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: widget.paddingHorizontal,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.leading != null) ...[
-                        IconTheme.merge(
-                          data: IconThemeData(
-                            size: 22,
-                            color: isDisabled
-                                ? (defaultTargetPlatform == TargetPlatform.iOS
-                                      ? const Color(0xFFAEAEB2)
-                                      : defaultTargetPlatform == TargetPlatform.android
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: widget.paddingHorizontal,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.leading != null) ...[
+                            IconTheme.merge(
+                              data: IconThemeData(
+                                size: 22,
+                                color: isDisabled
+                                    ? (defaultTargetPlatform ==
+                                              TargetPlatform.iOS
+                                          ? const Color(0xFFAEAEB2)
+                                          : defaultTargetPlatform ==
+                                                TargetPlatform.android
                                           ? const Color(0xFF424242)
                                           : Colors.grey.shade600)
-                                : (widget.textStyle?.color ?? Colors.white),
+                                    : (widget.textStyle?.color ?? Colors.white),
+                              ),
+                              child: widget.leading!,
+                            ),
+                          ] else if (widget.leadingIcon != null) ...[
+                            Icon(
+                              widget.leadingIcon,
+                              size: 22,
+                              color: isDisabled
+                                  ? (defaultTargetPlatform == TargetPlatform.iOS
+                                        ? const Color(0xFFAEAEB2)
+                                        : defaultTargetPlatform ==
+                                              TargetPlatform.android
+                                        ? const Color(0xFF424242)
+                                        : Colors.grey.shade600)
+                                  : (widget.textStyle?.color ?? Colors.white),
+                            ),
+                            SizedBox(width: _iconTextSpacing()),
+                          ],
+                          Text(
+                            widget.label,
+                            style:
+                                (widget.textStyle ??
+                                        const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 17,
+                                        ))
+                                    .copyWith(
+                                      color: isDisabled
+                                          ? (defaultTargetPlatform ==
+                                                    TargetPlatform.iOS
+                                                ? const Color(
+                                                    0xFFB0B0B0,
+                                                  ) // medium gray for iOS
+                                                : defaultTargetPlatform ==
+                                                      TargetPlatform.android
+                                                ? const Color(
+                                                    0xFF888888,
+                                                  ) // medium gray for Android
+                                                : Colors
+                                                      .grey
+                                                      .shade500) // medium for others
+                                          : (widget.textStyle?.color ??
+                                                Colors.white),
+                                    ),
                           ),
-                          child: widget.leading!,
-                        ),
-                      ] else if (widget.leadingIcon != null) ...[
-                        Icon(
-                          widget.leadingIcon,
-                          size: 22,
-                          color: isDisabled
-                              ? (defaultTargetPlatform == TargetPlatform.iOS
-                                    ? const Color(0xFFAEAEB2)
-                                    : defaultTargetPlatform == TargetPlatform.android
-                                    ? const Color(0xFF424242)
-                                    : Colors.grey.shade600)
-                              : (widget.textStyle?.color ?? Colors.white),
-                        ),
-                        SizedBox(width: _iconTextSpacing()),
-                      ],
-                      Text(
-                        widget.label,
-                        style:
-                            (widget.textStyle ??
-                                    const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 17,
-                                    ))
-                                .copyWith(
-                          color: isDisabled
-                          ? (defaultTargetPlatform == TargetPlatform.iOS
-                            ? const Color(0xFFB0B0B0) // medium gray for iOS
-                            : defaultTargetPlatform == TargetPlatform.android
-                            ? const Color(0xFF888888) // medium gray for Android
-                            : Colors.grey.shade500) // medium for others
-                          : (widget.textStyle?.color ?? Colors.white),
-                                ),
+                          if (widget.trailingIcon != null) ...[
+                            SizedBox(width: _iconTextSpacing()),
+                            Icon(
+                              widget.trailingIcon,
+                              size: 22,
+                              color: isDisabled
+                                  ? (defaultTargetPlatform == TargetPlatform.iOS
+                                        ? const Color(0xFFAEAEB2)
+                                        : defaultTargetPlatform ==
+                                              TargetPlatform.android
+                                        ? const Color(0xFF424242)
+                                        : Colors.grey.shade600)
+                                  : (widget.textStyle?.color ?? Colors.white),
+                            ),
+                          ],
+                        ],
                       ),
-                      if (widget.trailingIcon != null) ...[
-                        SizedBox(width: _iconTextSpacing()),
-                        Icon(
-                          widget.trailingIcon,
-                          size: 22,
-                          color: isDisabled
-                              ? (defaultTargetPlatform == TargetPlatform.iOS
-                                    ? const Color(0xFFAEAEB2)
-                                    : defaultTargetPlatform == TargetPlatform.android
-                                    ? const Color(0xFF424242)
-                                    : Colors.grey.shade600)
-                              : (widget.textStyle?.color ?? Colors.white),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
